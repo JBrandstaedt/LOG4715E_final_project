@@ -10,7 +10,7 @@ class TrustedHost:
         self.private_key = private_key
         self.proxy_private_dns = proxy_pirvate_dns 
 
-    def forward_request(self, target_host, query, target_private_dns=''):
+    def forward_request(self, target_host, query, target_private_dns):
         """SSH Tunnel for following requests.
         
         Parameters
@@ -25,14 +25,15 @@ class TrustedHost:
                 SQLConnect(target_private_dns).execute_query(query)
 
         
-    def forward(self, query):
+    def forward(self, query, target_private_dns=''):
         """Directly to SQL manager.
         
         Parameters
         ----------
         query : string
+        target_private_dns: string
         """
-        self.forward_request(self.proxy_private_dns, query)
+        self.forward_request(self.proxy_private_dns, query, target_private_dns)
 
 
 if __name__ == "__main__":
@@ -42,11 +43,12 @@ if __name__ == "__main__":
     proxy_private_dns = os.getenv('PROXY_DNS')
 
     query = sys.argv[1]
-    
 
     gatekeeper = TrustedHost(private_key, proxy_private_dns)
 
+    # if sys.argv.__len__ == 2:
     # while True:
     #     # get precedent request and forward it to proxy
     #     # wait for response from proxy and send it back to Gatekeeper
-
+    # else:
+    #     target = sys.argv[2]

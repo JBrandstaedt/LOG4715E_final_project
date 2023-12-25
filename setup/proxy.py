@@ -15,7 +15,7 @@ class ProxyServer:
         self.worker3_private_dns = worker3_private_dns
 
 
-    def forward_request(self, target_host, query, target_private_dns = ''):
+    def forward_request(self, target_host, query, target_private_dns):
         """SSH Tunnel for following requests.
         
         Parameters
@@ -29,27 +29,29 @@ class ProxyServer:
             else:   
                 SQLConnect(target_private_dns).execute_query(query)
         
-    def direct_hit(self, query):
+    def direct_hit(self, query, target_private_dns=''):
         """Directly to SQL manager.
         
         Parameters
         ----------
         query : string
+        target_private_dns: string
         """
-        self.forward_request(self.manager_private_dns, query)
+        self.forward_request(self.manager_private_dns, query, target_private_dns)
 
     
-    def random_hit(self, query):
+    def random_hit(self, query, target_private_dns=''):
         """Contact a random worker among the three available.
         
         Parameters
         ----------
         query : string
+        target_private_dns: string
         """
         # Choose randomly a data node
         target_host = random.choice([self.worker1_private_dns, self.worker2_private_dns, self.worker3_private_dns])
         print(f"Chosen worker node: {target_host}")
-        self.forward_request(target_host, query)
+        self.forward_request(target_host, query, target_private_dns)
 
 
     def ping_server(self, server_private_dns):
@@ -57,11 +59,12 @@ class ProxyServer:
         
 
    
-    def custom_hit(self, query):
+    def custom_hit(self, query, target_private_dns=''):
         """Contact node with the lowest ping.
         Parameters
         ----------
         query : string
+        target_private_dns: string
         """
         nodes = [self.worker1_private_dns, self.worker2_private_dns, self.worker3_private_dns]
         # Compute average latencies
@@ -69,7 +72,7 @@ class ProxyServer:
         # Choose worker according to latency
         fastest_node = nodes[avg_latencies.index(min(avg_latencies))]
         print(f"Chosen node: {fastest_node}")
-        self.forward_request(fastest_node, query)
+        self.forward_request(fastest_node, query, target_private_dns)
 
 
 if __name__ == "__main__":
@@ -91,6 +94,7 @@ if __name__ == "__main__":
     #     while True:
     #         # get and forward query received from trusted host
     #         # wait for response from SQL server and send it back to trusted host
+    #         
     # else:
     #         # run test hits
     
