@@ -7,15 +7,16 @@ import sys
 
 class ProxyServer:
     """Proxy pattern implementation used to route requests to MySQL cluster."""
-    def __init__(self, private_key, manager_private_dns, worker1_private_dns, worker2_private_dns, worker3_private_dns):
+    def __init__(self, private_key, manager_private_dns, worker1_private_dns, worker2_private_dns, worker3_private_dns, proxy_private_dns=''):
         self.private_key = private_key
         self.manager_private_dns = manager_private_dns
         self.worker1_private_dns = worker1_private_dns
         self.worker2_private_dns = worker2_private_dns
         self.worker3_private_dns = worker3_private_dns
+        self.proxy_private_dns = proxy_private_dns
 
 
-    def forward_request(self, target_host, query, target_private_dns):
+    def forward_request(self, target_host, query, send):
         """SSH Tunnel for following requests.
         
         Parameters
@@ -23,35 +24,36 @@ class ProxyServer:
         target_host :   string
         query : string
         """
-        with SSHTunnelForwarder(target_host, ssh_username="ubuntu", ssh_pkey=self.private_key, remote_bind_address=(self.manager_private_dns, 3306)):
-            if (target_private_dns == ''):
-                SQLConnect(self.manager_private_dns).execute_query(query)  
-            else:   
-                SQLConnect(target_private_dns).execute_query(query)
+        if (send):
+            with SSHTunnelForwarder(target_host, ssh_username="ubuntu", ssh_pkey=self.private_key, remote_bind_address=(self.manager_private_dns, 3306)):
+                    SQLConnect(self.manager_private_dns).execute_query(query)  
+        else:   
+            with SSHTunnelForwarder(target_host, ssh_username="ubuntu", ssh_pkey=self.private_key, remote_bind_address=(self.proxy_private_dns, 3306)):
+                    SQLConnect(self.proxy_private_dns).execute_query(query)  
         
-    def direct_hit(self, query, target_private_dns=''):
+    def direct_hit(self, query, send=True):
         """Directly to SQL manager.
         
         Parameters
         ----------
         query : string
-        target_private_dns: string
+        send : bool
         """
-        self.forward_request(self.manager_private_dns, query, target_private_dns)
+        self.forward_request(self.manager_private_dns, query, send)
 
     
-    def random_hit(self, query, target_private_dns=''):
+    def random_hit(self, query, send=True):
         """Contact a random worker among the three available.
         
         Parameters
         ----------
         query : string
-        target_private_dns: string
+        send : bool
         """
         # Choose randomly a data node
         target_host = random.choice([self.worker1_private_dns, self.worker2_private_dns, self.worker3_private_dns])
         print(f"Chosen worker node: {target_host}")
-        self.forward_request(target_host, query, target_private_dns)
+        self.forward_request(target_host, query, send)
 
 
     def ping_server(self, server_private_dns):
@@ -59,12 +61,12 @@ class ProxyServer:
         
 
    
-    def custom_hit(self, query, target_private_dns=''):
+    def custom_hit(self, query, send=True):
         """Contact node with the lowest ping.
         Parameters
         ----------
         query : string
-        target_private_dns: string
+        send : bool
         """
         nodes = [self.worker1_private_dns, self.worker2_private_dns, self.worker3_private_dns]
         # Compute average latencies
@@ -72,7 +74,7 @@ class ProxyServer:
         # Choose worker according to latency
         fastest_node = nodes[avg_latencies.index(min(avg_latencies))]
         print(f"Chosen node: {fastest_node}")
-        self.forward_request(fastest_node, query, target_private_dns)
+        self.forward_request(fastest_node, query, send)
 
 
 if __name__ == "__main__":
@@ -91,6 +93,8 @@ if __name__ == "__main__":
 
 
     # if (sys.argv.__len__==2):
+    # proxy = sys.argv[2]
+    # proxy = ProxyServer(private_key, manager_private_dns, worker1_private_dns, worker2_private_dns, worker3_private_dns, proxy)
     #     while True:
     #         # get and forward query received from trusted host
     #         # wait for response from SQL server and send it back to trusted host

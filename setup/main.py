@@ -169,6 +169,15 @@ To create the user:\n\
     
     input("\nIf both commands were successful, you can press a key to continue with the proxy set up...\n")
 
+    print("\n\Benchmark is processing...\n")
+    manager_server.exec_command("sh setup_benchmark.sh")
+    standalone_server.exec_command("sh setup_benchmark.sh")
+
+    manager_server.download_file(remote_filepath='benchmark_results.txt', local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/results/sql_benchmark_results.txt')
+    standalone_server.download_file(remote_filepath='benchmark_results.txt',local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/results/standalone_benchmark.results.txt')
+    print("Benchmark completed.")
+
+
     print("Set up proxy...")
     # Setup proxy
     proxy_server = ServerClient(proxy_public_dns[0], "ubuntu", key_file)
@@ -179,10 +188,11 @@ To create the user:\n\
     proxy_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/proxy_connect.py', remote_filepath='/home/ubuntu/proxy_connect.py')
     proxy_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/proxy.py', remote_filepath='/home/ubuntu/proxy.py')
 
-    print(f"Follow the next steps to setup the proxy correctly\n\
+    print(f"Follow the next steps to setup the proxy correctly and DO NOT CLOSE the terminal\n\
         Open a new terminal and run the following commands:\n\
             ssh -i {key_file} ubuntu@{proxy_public_dns[0]}\n\
             sh setup_proxy.sh {key_file} {manager_private_dns[0]} {worker_private_dns[0]} {worker_private_dns[1]} {worker_private_dns[2]}\n\
+        Now you can run queries from the proxy by using commands similar to this one:
             sudo python3 proxy.py \"SELECT COUNT(*) FROM actor;\"")
     
     input("\nIf previous commands run correctly, you can press a key to continue with the Gatekeeper setup...")
@@ -203,19 +213,23 @@ To create the user:\n\
         Open a new terminal and run the following commands:\n\
             ssh -i {key_file} ubuntu@{gk_public_dns[0]}\n\
             sh setup_gatekeeper.sh {key_file} {trusted_private_dns[0]} \n\n\
-        In a new terminal run:\n\
+        Open an other new terminal and run the following commands:\n\
             ssh -i {key_file} ubuntu@{trusted_public_dns[0]}\n\
-            sh setup_proxy.sh {key_file} {proxy_private_dns[0]}\n\n\
-        Now both Gatekeeper and Trusted Host should be running fine.\n You can run the following command to test the query:\n\
-            sudo python3 gatekeeper.py \"SELECT COUNT(*) FROM actor;\"")
+            sh setup_trusted_host.sh {key_file} {gk_private_dns[0]}\n\n\
+        Now both Gatekeeper and Trusted Host should be running fine.\n")
     
     input("\nIf previous commands run correctly, you can press a key to continue with the Gatekeeper setup...")
 
-
-    print("\n\Benchmark is processing...\n")
-    manager_server.exec_command("sh setup_benchmark.sh")
-    standalone_server.exec_command("sh setup_benchmark.sh")
-
-    manager_server.download_file(remote_filepath='benchmark_results.txt', local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/results/sql_benchmark_results.txt')
-    standalone_server.download_file(remote_filepath='benchmark_results.txt',local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/results/standalone_benchmark.results.txt')
-    print("Benchmark completed.")
+    print(f"Now, to use the architecture, you have to open 3 terminal.\n\
+        First one : \n\
+            ssh -i {key_file} ubuntu@{proxy_public_dns[0]}\n\
+            sudo python3 proxy.py \"\" {proxy_private_dns[0]}\
+        Second one :\n\ 
+            ssh -i {key_file} ubuntu@{trusted_public_dns[0]}\n\
+            sudo python3 trusted_host.py {proxy_private_dns[0]}\
+        Third one :\n\
+            ssh -i {key_file} ubuntu@{gk_public_dns[0]}\n\n\
+        Now you are able to run any query by using this type of command in the gatekeeper:\n\
+            sudo python3 gatekeeper.py \"SELECT COUNT(*) FROM actor;\"")
+    input("\n\nPress any key once you have finished.")
+    
