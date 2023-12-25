@@ -199,6 +199,19 @@ To create the user:\n\
     trustedhost_server.upload_file(local_filepath=f'/home/jbrandstaedt/PolyMtl/Cloud_Computing/key/{key_file}', remote_filepath=f'/home/ubuntu/{key_file}')
     trustedhost_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/trusted_host.py', remote_filepath='/home/ubuntu/trusted_host.py')
 
+    print(f"Follow the next steps to setup the proxy correctly\n\
+        Open a new terminal and run the following commands:\n\
+            ssh -i {key_file} ubuntu@{gk_public_dns[0]}\n\
+            sh setup_gatekeeper.sh {key_file} {trusted_private_dns[0]} \n\n\
+        In a new terminal run:\n\
+            ssh -i {key_file} ubuntu@{trusted_public_dns[0]}\n\
+            sh setup_proxy.sh {key_file} {proxy_private_dns[0]}\n\n\
+        Now both Gatekeeper and Trusted Host should be running fine.\n You can run the following command to test the query:\n\
+            sudo python3 gatekeeper.py \"SELECT COUNT(*) FROM actor;\"")
+    
+    input("\nIf previous commands run correctly, you can press a key to continue with the Gatekeeper setup...")
+
+
     print("\n\Benchmark is processing...\n")
     manager_server.exec_command("sh setup_benchmark.sh")
     standalone_server.exec_command("sh setup_benchmark.sh")

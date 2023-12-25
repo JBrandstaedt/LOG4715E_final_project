@@ -44,3 +44,5 @@ if __name__ == "__main__":
 
     gatekeeper.forward(query)
 
+    # wait for response and send the result
+

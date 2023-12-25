@@ -8,9 +8,9 @@ class TrustedHost:
     """Proxy pattern implementation used to route requests to MySQL cluster."""
     def __init__(self, private_key, proxy_pirvate_dns):
         self.private_key = private_key
-        self.proxy_pirvate_dns = proxy_pirvate_dns 
+        self.proxy_private_dns = proxy_pirvate_dns 
 
-    def forward_request(self, target_host, query):
+    def forward_request(self, target_host, query, target_private_dns=''):
         """SSH Tunnel for following requests.
         
         Parameters
@@ -18,8 +18,11 @@ class TrustedHost:
         target_host :   string
         query : string
         """
-        with SSHTunnelForwarder(target_host, ssh_username="ubuntu", ssh_pkey=self.private_key, remote_bind_address=(self.proxy_pirvate_dns, 3306)):
-            SQLConnect(self.proxy_pirvate_dns).execute_query(query)     
+        with SSHTunnelForwarder(target_host, ssh_username="ubuntu", ssh_pkey=self.private_key, remote_bind_address=(self.proxy_private_dns, 3306)):
+            if (target_private_dns == ''):
+                SQLConnect(self.proxy_private_dns).execute_query(query)  
+            else:   
+                SQLConnect(target_private_dns).execute_query(query)
 
         
     def forward(self, query):
@@ -29,7 +32,7 @@ class TrustedHost:
         ----------
         query : string
         """
-        self.forward_request(self.proxy_pirvate_dns, query)
+        self.forward_request(self.proxy_private_dns, query)
 
 
 if __name__ == "__main__":
@@ -39,8 +42,11 @@ if __name__ == "__main__":
     proxy_private_dns = os.getenv('PROXY_DNS')
 
     query = sys.argv[1]
+    
 
     gatekeeper = TrustedHost(private_key, proxy_private_dns)
 
-    gatekeeper.forward(query)
+    # while True:
+    #     # get precedent request and forward it to proxy
+    #     # wait for response from proxy and send it back to Gatekeeper
 

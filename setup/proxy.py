@@ -15,7 +15,7 @@ class ProxyServer:
         self.worker3_private_dns = worker3_private_dns
 
 
-    def forward_request(self, target_host, query):
+    def forward_request(self, target_host, query, target_private_dns = ''):
         """SSH Tunnel for following requests.
         
         Parameters
@@ -24,8 +24,10 @@ class ProxyServer:
         query : string
         """
         with SSHTunnelForwarder(target_host, ssh_username="ubuntu", ssh_pkey=self.private_key, remote_bind_address=(self.manager_private_dns, 3306)):
-            SQLConnect(self.manager_private_dns).execute_query(query)     
-
+            if (target_private_dns == ''):
+                SQLConnect(self.manager_private_dns).execute_query(query)  
+            else:   
+                SQLConnect(target_private_dns).execute_query(query)
         
     def direct_hit(self, query):
         """Directly to SQL manager.
@@ -84,6 +86,14 @@ if __name__ == "__main__":
 
     proxy = ProxyServer(private_key, manager_private_dns, worker1_private_dns, worker2_private_dns, worker3_private_dns)
 
+
+    # if (sys.argv.__len__==2):
+    #     while True:
+    #         # get and forward query received from trusted host
+    #         # wait for response from SQL server and send it back to trusted host
+    # else:
+    #         # run test hits
+    
     print("proxy direct hit:")
     proxy.direct_hit(query)
 
