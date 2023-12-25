@@ -126,17 +126,17 @@ if __name__ == "__main__":
     standalone_server.exec_command("sudo apt update;")
     standalone_server.exec_command("sudo apt install -y mysql-server-8.0")
     
-    standalone_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/bash/setup_benchmark.sh', remote_filepath='/home/ubuntu/setup_benchmark.sh')
+    standalone_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/bash/setup_benchmark.sh', remote_filepath='/home/ubuntu/setup_benchmark.sh')
     print("Finished")
 
     # We upload all needed files to the manager
     print("Upload files to SQL manager...")
     manager_server = ServerClient(manager_public_dns[0], "ubuntu", key_file)
-    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/bash/setup_cluster_manager.sh', remote_filepath='/home/ubuntu/setup_cluster_manager.sh')
-    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/bash/setup_cluster_mysql.sh', remote_filepath='/home/ubuntu/setup_cluster_mysql.sh')
-    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/bash/setup_benchmark.sh', remote_filepath='/home/ubuntu/setup_benchmark.sh')
-    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/config/config.ini', remote_filepath='/home/ubuntu/config.ini')
-    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/config/mysql.cnf', remote_filepath='/home/ubuntu/mysql.cnf')
+    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/bash/setup_cluster_manager.sh', remote_filepath='/home/ubuntu/setup_cluster_manager.sh')
+    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/bash/setup_cluster_mysql.sh', remote_filepath='/home/ubuntu/setup_cluster_mysql.sh')
+    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/bash/setup_benchmark.sh', remote_filepath='/home/ubuntu/setup_benchmark.sh')
+    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/config/config.ini', remote_filepath='/home/ubuntu/config.ini')
+    manager_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/config/mysql.cnf', remote_filepath='/home/ubuntu/mysql.cnf')
 
     manager_server.exec_command("sh setup_cluster_manager.sh")
     print("Finished")
@@ -174,10 +174,10 @@ To create the user:\n\
     proxy_server = ServerClient(proxy_public_dns[0], "ubuntu", key_file)
 
     # Upload required files
-    proxy_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/bash/setup_proxy.sh', remote_filepath='/home/ubuntu/setup_proxy.sh')
-    proxy_server.upload_file(local_filepath=f'/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/key/{key_file}', remote_filepath=f'/home/ubuntu/{key_file}')
-    proxy_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/proxy_connect.py', remote_filepath='/home/ubuntu/proxy_connect.py')
-    proxy_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/proxy.py', remote_filepath='/home/ubuntu/proxy.py')
+    proxy_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/bash/setup_proxy.sh', remote_filepath='/home/ubuntu/setup_proxy.sh')
+    proxy_server.upload_file(local_filepath=f'/home/jbrandstaedt/PolyMtl/Cloud_Computing/key/{key_file}', remote_filepath=f'/home/ubuntu/{key_file}')
+    proxy_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/proxy_connect.py', remote_filepath='/home/ubuntu/proxy_connect.py')
+    proxy_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/proxy.py', remote_filepath='/home/ubuntu/proxy.py')
 
     print(f"Follow the next steps to setup the proxy correctly\n\
         Open a new terminal and run the following commands:\n\
@@ -191,18 +191,18 @@ To create the user:\n\
     gatekeeper_server = ServerClient(gk_public_dns[0], "ubuntu", key_file)
     trustedhost_server = ServerClient(trusted_public_dns[0], "ubuntu", key_file)
 
-    gatekeeper_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/bash/setup_gatekeeper.sh', remote_filepath='/home/ubuntu/setup_gatekeeper.sh')
-    gatekeeper_server.upload_file(local_filepath=f'/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/key/{key_file}', remote_filepath=f'/home/ubuntu/{key_file}')
-    gatekeeper_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/gatekeeper.py', remote_filepath='/home/ubuntu/gatekeeper.py')
+    gatekeeper_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/bash/setup_gatekeeper.sh', remote_filepath='/home/ubuntu/setup_gatekeeper.sh')
+    gatekeeper_server.upload_file(local_filepath=f'/home/jbrandstaedt/PolyMtl/Cloud_Computing/key/{key_file}', remote_filepath=f'/home/ubuntu/{key_file}')
+    gatekeeper_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/gatekeeper.py', remote_filepath='/home/ubuntu/gatekeeper.py')
 
-    trustedhost_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/bash/setup_trusted_host.sh', remote_filepath='/home/ubuntu/setup_trusted_host.sh')
-    trustedhost_server.upload_file(local_filepath=f'/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/key/{key_file}', remote_filepath=f'/home/ubuntu/{key_file}')
-    trustedhost_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/setup/trusted_host.py', remote_filepath='/home/ubuntu/trusted_host.py')
+    trustedhost_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/bash/setup_trusted_host.sh', remote_filepath='/home/ubuntu/setup_trusted_host.sh')
+    trustedhost_server.upload_file(local_filepath=f'/home/jbrandstaedt/PolyMtl/Cloud_Computing/key/{key_file}', remote_filepath=f'/home/ubuntu/{key_file}')
+    trustedhost_server.upload_file(local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/setup/trusted_host.py', remote_filepath='/home/ubuntu/trusted_host.py')
 
     print("\n\Benchmark is processing...\n")
     manager_server.exec_command("sh setup_benchmark.sh")
     standalone_server.exec_command("sh setup_benchmark.sh")
 
-    manager_server.download_file(remote_filepath='benchmark_results.txt', local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/results/sql_benchmark_results.txt')
-    standalone_server.download_file(remote_filepath='benchmark_results.txt',local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/TP3/results/standalone_benchmark.results.txt')
+    manager_server.download_file(remote_filepath='benchmark_results.txt', local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/results/sql_benchmark_results.txt')
+    standalone_server.download_file(remote_filepath='benchmark_results.txt',local_filepath='/home/jbrandstaedt/PolyMtl/Cloud_Computing/TP3/LOG4715E_final_project/results/standalone_benchmark.results.txt')
     print("Benchmark completed.")
