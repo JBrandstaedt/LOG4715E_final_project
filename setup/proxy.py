@@ -16,7 +16,7 @@ class ProxyServer:
         self.proxy_private_dns = proxy_private_dns
 
 
-    def forward_request(self, target_host, query, send):
+    def forward_request(self, target_host, query, send_to_sql):
         """SSH Tunnel for following requests.
         
         Parameters
@@ -24,13 +24,17 @@ class ProxyServer:
         target_host :   string
         query : string
         """
-        if (send):
+        # Connection to SQL server
+        if (send_to_sql):
             with SSHTunnelForwarder(target_host, ssh_username="ubuntu", ssh_pkey=self.private_key, remote_bind_address=(self.manager_private_dns, 3306)):
-                    SQLConnect(self.manager_private_dns).execute_query(query)  
+                    SQLConnect(self.manager_private_dns, True).execute_query(query)  
+
+        # Connection to an other instance
         else:   
             with SSHTunnelForwarder(target_host, ssh_username="ubuntu", ssh_pkey=self.private_key, remote_bind_address=(self.proxy_private_dns, 3306)):
                     SQLConnect(self.proxy_private_dns).execute_query(query)  
         
+
     def direct_hit(self, query, send=True):
         """Directly to SQL manager.
         
@@ -59,7 +63,6 @@ class ProxyServer:
     def ping_server(self, server_private_dns):
         return ping(target=server_private_dns, count=1, timeout=2).rtt_avg_ms
         
-
    
     def custom_hit(self, query, send=True):
         """Contact node with the lowest ping.
@@ -89,18 +92,16 @@ if __name__ == "__main__":
     # Get passed request
     query = sys.argv[1]
 
-    proxy = ProxyServer(private_key, manager_private_dns, worker1_private_dns, worker2_private_dns, worker3_private_dns)
-
-
     # if (sys.argv.__len__==2):
-    # proxy = sys.argv[2]
-    # proxy = ProxyServer(private_key, manager_private_dns, worker1_private_dns, worker2_private_dns, worker3_private_dns, proxy)
-    #     while True:
-    #         # get and forward query received from trusted host
-    #         # wait for response from SQL server and send it back to trusted host
+    # trusted_host = sys.argv[2]
+    # proxy = ProxyServer(private_key, manager_private_dns, worker1_private_dns, worker2_private_dns, worker3_private_dns, trusted_host)
+    #     # get and forward query received from trusted host
+    #     # wait for response from SQL server and send it back to trusted host
     #         
     # else:
-    #         # run test hits
+    #     # run test hits
+
+    proxy = ProxyServer(private_key, manager_private_dns, worker1_private_dns, worker2_private_dns, worker3_private_dns)
     
     print("proxy direct hit:")
     proxy.direct_hit(query)

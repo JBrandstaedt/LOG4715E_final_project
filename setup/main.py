@@ -7,11 +7,7 @@ import paramiko
 if __name__ == "__main__":
     ec2_ressource = boto3.resource("ec2")
     ec2_client = boto3.client('ec2')
-    ami_id = "ami-0c7217cdde317cfec" # ubuntu ami id 1
-    # ami_id = "ami-06aa3f7caf3a30282" # ubuntu ami id 2
-
-    # ami_id = "ami-03a6eaae9938c858c" # Amazon Linux 1
-    # ami_id = "ami-079db87dc4c10ac91" # Amazon Linux 2
+    ami_id = "ami-0c7217cdde317cfec" # ubuntu ami id 
 
     # It should already have multiple subnets listed, on different availability zones
     # (at least it is the case for us with our student accounts)
@@ -20,7 +16,7 @@ if __name__ == "__main__":
     key_pair_name = "my_key_pair" 
     # Create EC2 key pair
     key_pair = utils_instances.create_key_pair(ec2_client, key_pair_name)
-    key_file = key_pair_name+".pem"
+    key_file = "../key/"+key_pair_name+".pem"
 
     # Security group
     security_group_id = "tp3_sg"
@@ -192,7 +188,7 @@ To create the user:\n\
         Open a new terminal and run the following commands:\n\
             ssh -i {key_file} ubuntu@{proxy_public_dns[0]}\n\
             sh setup_proxy.sh {key_file} {manager_private_dns[0]} {worker_private_dns[0]} {worker_private_dns[1]} {worker_private_dns[2]}\n\
-        Now you can run queries from the proxy by using commands similar to this one:
+        Now you can run queries from the proxy by using commands similar to this one:\n\
             sudo python3 proxy.py \"SELECT COUNT(*) FROM actor;\"")
     
     input("\nIf previous commands run correctly, you can press a key to continue with the Gatekeeper setup...")
@@ -220,16 +216,8 @@ To create the user:\n\
     
     input("\nIf previous commands run correctly, you can press a key to continue with the Gatekeeper setup...")
 
-    print(f"Now, to use the architecture, you have to open 3 terminal.\n\
-        First one : \n\
-            ssh -i {key_file} ubuntu@{proxy_public_dns[0]}\n\
-            sudo python3 proxy.py \"\" {proxy_private_dns[0]}\
-        Second one :\n\ 
-            ssh -i {key_file} ubuntu@{trusted_public_dns[0]}\n\
-            sudo python3 trusted_host.py {proxy_private_dns[0]}\
-        Third one :\n\
-            ssh -i {key_file} ubuntu@{gk_public_dns[0]}\n\n\
-        Now you are able to run any query by using this type of command in the gatekeeper:\n\
-            sudo python3 gatekeeper.py \"SELECT COUNT(*) FROM actor;\"")
-    input("\n\nPress any key once you have finished.")
-    
+print(f"Now, you can use the whole architecture by running commands similar to the following one:\n\
+        ssh -i 'key_file' ubuntu@'gk_public_dns[0]'\n\n\
+    Now you are able to run any query by using this type of command in the gatekeeper:\n\
+        sudo python3 gatekeeper.py \"SELECT COUNT(*) FROM actor;\"\n")
+input("\n\nPress any key once you have finished.")
